@@ -25,3 +25,13 @@ class Convolution:
 
         self.kernels = np.random.randn(*kernel_shape)
         self.biases = np.random.randn(*output_shape)
+    
+    def forward(self, input):
+        self.input = input # for back_prop
+        self.output = np.copy(self.biases)
+
+        for i in range(self.filters):
+            for j in range(self.input_depth):
+                self.output[i] += signal.correlate2d(self.input[j], self.kernels[i, j], self.padding)
+        
+        return self.output
