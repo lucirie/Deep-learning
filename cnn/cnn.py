@@ -35,3 +35,17 @@ class Convolution:
                 self.output[i] += signal.correlate2d(self.input[j], self.kernels[i, j], self.padding)
         
         return self.output
+    
+    def backwards(self, output_gradient, learning_rate):
+        input_gradients = np.zeros_like(self.input)
+        kernels_gradients = np.zeros_like(self.kernels)
+        biases_gradients = np.zeros_like(self.biases)
+
+        for i in range(self.filters):
+            for j in range(self.input_depth):
+                kernels_gradients[i][j] = signal.correlate2d(self.input[j], output_gradient[i], mode='valid')
+                input_gradients[j] += signal.convolve2d(output_gradient[j], self.kernels[i, j])
+                biases_gradients = output_gradient
+        self.kernels -= learning_rate * kernels_gradients
+        self.biases -= learning_rate * biases_gradients
+        return input_gradients
