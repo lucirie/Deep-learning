@@ -60,3 +60,15 @@ class Reshape:
     
     def backwards(self, output_gradient):
         return np.reshape(output_gradient, self.input_shape)
+    
+def max_pooling(input, pool_size=2, stride=2):
+    C, H, W = input.shape
+    out_H, out_W = (H - pool_size) // stride + 1, (W - pool_size) // stride + 1
+    output = np.zeros((C, out_H, out_W))
+    for c in range(C):
+        for i in range(out_H):
+            for j in range(out_W):
+                h_start, w_start = i * stride, j * stride
+                h_end, w_end = h_start + pool_size, w_start + pool_size
+                output[c, i, j] = np.max(input[c, h_start:h_end, w_start:w_end])
+    return output
